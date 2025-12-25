@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Knowledge Assistant - Anime Mode</title>
+    <!-- Anime-style fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background Decor -->
+    <div class="decor-circle" style="top: 10%; left: 10%; width: 300px; height: 300px; background: var(--anime-pink);">
+    </div>
+    <div class="decor-circle"
+        style="bottom: 10%; right: 10%; width: 400px; height: 400px; background: var(--anime-cyan);"></div>
+
+    <div class="container">
+        <header>
+            <h1 class="anime-title">KNOWLEDGE<br>ASSISTANT</h1>
+        </header>
+
+        <!-- INPUT SECTION -->
+        <div class="anime-card">
+            <h2 style="margin-top: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--anime-yellow);">
+                <i data-lucide="play-circle"></i> START ANALYSIS
+            </h2>
+            <div class="input-group">
+                <input type="text" id="videoUrl" placeholder="Paste YouTube Link here...">
+                <button class="action-btn" onclick="processVideo()" id="processBtn">GO!</button>
+            </div>
+
+            <div id="loadingState" class="loading-overlay">
+                <div class="loading-text">WORKING ON IT... (~´･_･`)~</div>
+                <p style="color: var(--anime-text); font-size: 0.9rem;">(This might take a moment, please wait!)</p>
+            </div>
+        </div>
+
+        <!-- RESULT SECTION -->
+        <div id="resultsArea">
+            <div class="anime-card">
+                <div class="summary-block">
+                    <h2 id="videoTitle" style="color: white; margin-top: 0;">Title Load...</h2>
+                    <p id="mainSummary" style="line-height: 1.6;">Summary loading...</p>
+                </div>
+
+                <div class="topic-container" id="topicsContainer">
+                    <!-- Javascript injects here -->
+                </div>
+
+                <!-- TRANSCRIPT TOGGLE -->
+                <div style="margin-top: 2rem;">
+                    <button class="action-btn"
+                        style="background: transparent; color: var(--anime-cyan); border-color: var(--anime-cyan); font-size: 1rem;"
+                        onclick="toggleTranscript()">
+                        SHOW FULL TRANSCRIPT
+                    </button>
+                    <div id="transcriptBox"
+                        style="display:none; margin-top: 1rem; max-height: 300px; overflow-y: auto; background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 12px; font-family: monospace; font-size: 0.9rem;">
+                        <!-- Transcript injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHAT SECTION -->
+            <div class="anime-card" style="margin-top: 2rem;">
+                <h2 style="margin-top: 0; color: var(--anime-cyan);">
+                    <i data-lucide="message-circle"></i> ASK ME ANYTHING
+                </h2>
+                <div class="input-group">
+                    <input type="text" id="chatInput" placeholder="Type your question..."
+                        onkeydown="if(event.key==='Enter') sendChat()">
+                    <button class="action-btn" style="background: var(--anime-pink); color: white;" onclick="sendChat()"
+                        id="chatBtn">SEND</button>
+                </div>
+                <div class="chat-box" id="chatBox">
+                    <div class="msg ai">
+                        <strong>AI Chan:</strong> Ready to help! (≧◡≦)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
