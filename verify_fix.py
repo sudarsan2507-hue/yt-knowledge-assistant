@@ -3,7 +3,7 @@ import requests
 import json
 import time
 
-API_URL = "http://127.0.0.1:8080"
+API_URL = "http://127.0.0.1:8000"
 VIDEO_URL = "https://youtu.be/fLeJJPxua3E"
 
 print(f"--- STARTING FINAL VERIFICATION ---")
