@@ -59,8 +59,10 @@ def process_youtube_video(url):
         audio_path = extract_audio(url)
         print(f"   Audio saved to: {audio_path}")
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(f"   Audio download failed: {e}")
-        return {"error": str(e)}
+        return {"error": f"Audio download failed: {e}"}
 
     # 2. Transcribe
     print("2. Transcribing...")
