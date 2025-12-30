@@ -6,7 +6,7 @@ import sys
 # Wait for server
 time.sleep(2)
 
-url = "http://127.0.0.1:8000/process_video"
+url = "http://127.0.0.1:8080/process_video"
 payload = {"url": "https://youtu.be/fLeJJPxua3E"}
 
 print(f"Sending request to {url}...")
