@@ -38,6 +38,16 @@ def init_db():
     return conn
 
 
+
+def reset_db():
+    conn = init_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM embeddings")
+    conn.commit()
+    conn.close()
+    print("Database reset: All embeddings cleared.")
+
+
 def embed_chunks(chunks_data=None, source_name="unknown"):
     conn = init_db()
     cur = conn.cursor()

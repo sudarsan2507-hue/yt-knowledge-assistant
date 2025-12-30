@@ -4,7 +4,8 @@ from openai import OpenAI
 from backend.audio_extract import extract_audio
 from backend.transcribe import transcribe_audio
 from backend.chunks_text import chunk_text
-from backend.embed_chunks import embed_chunks
+from backend.chunks_text import chunk_text
+from backend.embed_chunks import embed_chunks, reset_db
 
 openai_client = OpenAI()
 
@@ -87,6 +88,7 @@ def process_youtube_video(url):
 
     # 4. Chunk & Embed for Q&A
     print("4. Chunking and Embedding...")
+    reset_db()  # Clear previous video context
     chunks = chunk_text(transcript_text, chunk_size=500, overlap=100)
     
     # Prepare chunks with IDs

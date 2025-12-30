@@ -23,13 +23,6 @@ import os
 
 app = FastAPI()
 
-# Mount Frontend Static Files
-# Assuming 'backend' is the current directory, we go one up and to 'frontend'
-static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
-if os.path.exists(static_dir):
-    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
-else:
-    print(f"WARNING: Static dir not found at {static_dir}")
 
 app.add_middleware(
     CORSMiddleware,
@@ -79,6 +72,13 @@ def ask(data: AskRequest):
         "question": data.question,
         "answer": answer
     }
+
+# Mount Frontend Static Files (Last to avoid blocking API)
+static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+if os.path.exists(static_dir):
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+else:
+    print(f"WARNING: Static dir not found at {static_dir}")
 
 if __name__ == "__main__":
     import uvicorn
