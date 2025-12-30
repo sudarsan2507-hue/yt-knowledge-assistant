@@ -2,3 +2,12 @@
 __pycache__/
 *.part
 *.log
+audio/
+embeddings/
+transcripts/
+.venv/
+env/
+venv/
+.vscode/
+*.sqlite
+

@@ -1,5 +1,8 @@
 // --- SAFE INITIALIZATION BLOCK ---
-const API_BASE = 'http://127.0.0.1:8000';
+// --- SAFE INITIALIZATION BLOCK ---
+// If served from the same origin (production), use relative path. 
+// If running separately (dev port 5501), point to 8000.
+const API_BASE = window.location.port === '5501' ? 'http://127.0.0.1:8000' : '';
 
 // Wait for DOM
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,11 +10,49 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
     console.log("System Initialized: Anime Mode Active");
+
+    // Initial Health Check
+    checkBackendHealth();
+    // Poll every 5 seconds
+    setInterval(checkBackendHealth, 5000);
 });
+
+let isBackendOnline = false;
+
+async function checkBackendHealth() {
+    const statusBadge = document.getElementById('connectionStatus');
+    const statusText = document.getElementById('statusText');
+    const icon = statusBadge.querySelector('i');
+
+    try {
+        const res = await fetch(`${API_BASE}/health`);
+        if (res.ok) {
+            isBackendOnline = true;
+            statusBadge.className = 'status-badge connected';
+            statusText.innerText = "ONLINE";
+            icon.setAttribute('data-lucide', 'wifi');
+        } else {
+            throw new Error("Not OK");
+        }
+    } catch (e) {
+        isBackendOnline = false;
+        statusBadge.className = 'status-badge disconnected';
+        statusText.innerText = "OFFLINE";
+        icon.setAttribute('data-lucide', 'wifi-off');
+    }
+
+    if (window.lucide) lucide.createIcons();
+}
 
 async function processVideo() {
     const urlInput = document.getElementById('videoUrl');
     const url = urlInput.value.trim();
+
+    if (!isBackendOnline) {
+        alert("BACKEND OFFLINE! \nCannot process video. Please start the backend server.");
+        return;
+    }
+
     if (!url) {
         alert("Please enter a URL first! (USER_ERROR)");
         return;
@@ -49,6 +90,11 @@ async function sendChat() {
     const input = document.getElementById('chatInput');
     const box = document.getElementById('chatBox');
     const txt = input.value.trim();
+
+    if (!isBackendOnline) {
+        addMessage("Cannot send message: BACKEND OFFLINE", 'ai');
+        return;
+    }
 
     if (!txt) return;
 

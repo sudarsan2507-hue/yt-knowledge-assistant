@@ -17,17 +17,37 @@ from backend.llm_answer import generate_answer
 from backend.video_processing import process_youtube_video
 
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+import os
+
 app = FastAPI()
 
-from fastapi.middleware.cors import CORSMiddleware
+# Mount Frontend Static Files
+# Assuming 'backend' is the current directory, we go one up and to 'frontend'
+static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+if os.path.exists(static_dir):
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+else:
+    print(f"WARNING: Static dir not found at {static_dir}")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://127.0.0.1:5501",
+        "http://localhost:5500",
+        "http://localhost:5501",
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "message": "Backend is running"}
 
 
 class AskRequest(BaseModel):
@@ -59,3 +79,8 @@ def ask(data: AskRequest):
         "question": data.question,
         "answer": answer
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    # Use 0.0.0.0 for public access
+    uvicorn.run(app, host="0.0.0.0", port=8000)
