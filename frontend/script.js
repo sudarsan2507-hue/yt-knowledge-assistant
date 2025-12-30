@@ -1,8 +1,8 @@
 // --- SAFE INITIALIZATION BLOCK ---
 // --- SAFE INITIALIZATION BLOCK ---
-// If served from the same origin (production), use relative path. 
-// If running separately (dev port 5501), point to 8000.
-const API_BASE = window.location.port === '5501' ? 'http://127.0.0.1:8000' : '';
+// If served from backend (port 8000), use relative path.
+// For ANY other origin (Live Server 5500/5501, file://, etc), point to backend at 8000.
+const API_BASE = window.location.port === '8000' ? '' : 'http://127.0.0.1:8000';
 
 // Wait for DOM
 document.addEventListener('DOMContentLoaded', () => {
