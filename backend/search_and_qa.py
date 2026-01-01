@@ -2,7 +2,8 @@ import sqlite3
 import numpy as np
 import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "embeddings", "video_embeddings.sqlite")
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(ROOT_DIR, "embeddings", "video_embeddings.sqlite")
 MODEL_NAME = "all-MiniLM-L6-v2"
 TOP_K = 3
 

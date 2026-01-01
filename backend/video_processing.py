@@ -4,7 +4,6 @@ from openai import OpenAI
 from backend.audio_extract import extract_audio
 from backend.transcribe import transcribe_audio
 from backend.chunks_text import chunk_text
-from backend.chunks_text import chunk_text
 from backend.embed_chunks import embed_chunks, reset_db
 
 openai_client = OpenAI()

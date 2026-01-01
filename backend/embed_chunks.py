@@ -2,7 +2,8 @@ import os
 import json
 import sqlite3
 CHUNKS_DIR = "chunks"
-EMBED_DIR = "embeddings"
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EMBED_DIR = os.path.join(ROOT_DIR, "embeddings")
 DB_PATH = os.path.join(EMBED_DIR, "video_embeddings.sqlite")
 
 MODEL_NAME = "all-MiniLM-L6-v2"

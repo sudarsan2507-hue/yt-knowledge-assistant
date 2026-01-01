@@ -2,7 +2,7 @@ import requests
 import time
 import sys
 
-BASE_URL = "http://127.0.0.1:8001"
+BASE_URL = "http://127.0.0.1:8000"
 VIDEO_URL = "https://www.youtube.com/watch?v=jNQXAC9IVRw" # Me at the zoo (19s)
 
 def test_pipeline():

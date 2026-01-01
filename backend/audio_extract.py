@@ -17,9 +17,6 @@ def extract_audio(youtube_url: str):
         # Output file template
         "outtmpl": outtmpl,
 
-        # Explicit ffmpeg location (DIRECTORY, not exe)
-        "ffmpeg_location": r"D:\Download_chrome(P1)\ffmpeg-8.0.1-essentials_build\ffmpeg-8.0.1-essentials_build\bin",
-
         # Convert audio to mp3
         "postprocessors": [
             {
