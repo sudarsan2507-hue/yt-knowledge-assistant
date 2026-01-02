@@ -1,7 +1,7 @@
 // --- SAFE INITIALIZATION BLOCK ---
 // If served from backend (port 8000), use relative path.
 // For ANY other origin (Live Server 5500/5501, file://, etc), point to backend at 8000.
-const API_BASE = window.location.port === '8000' ? '' : 'http://127.0.0.1:8000';
+const API_BASE = 'https://yt-knowledge-assistant.onrender.com';
 
 // Wait for DOM
 document.addEventListener('DOMContentLoaded', () => {
