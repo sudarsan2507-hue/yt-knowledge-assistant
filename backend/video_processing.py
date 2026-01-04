@@ -102,4 +102,10 @@ def process_youtube_video(url):
 
     # Attach structured transcript to result
     structure["transcript"] = transcript_segments
+
+    # Cleanup: Delete audio file to save space
+    if os.path.exists(audio_path):
+        os.remove(audio_path)
+        print(f"Deleted temporary audio file: {audio_path}")
+
     return structure
