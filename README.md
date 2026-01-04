@@ -19,18 +19,27 @@ A powerful AI assistant that watches YouTube videos for you and answers question
    - Open `frontend/index.html` in your browser.
    - Or serve with Live Server (VS Code).
 
-## Deployment
+## Deployment (Render)
 
-### Dependencies
-- Python 3.10+
-- FFmpeg (must be installed in your environment PATH)
-
-### Environment Variables
-Create a `.env` file with:
-```
-OPENAI_API_KEY=your_key_here
+### 1. Build Command
+```bash
+pip install -r requirements.txt
 ```
 
-### Hosting
-- **Backend**: Can be deployed on Render, Railway, or any Python-supporting host.
-- **Frontend**: Update `API_BASE` in `script.js` to point to your deployed backend URL.
+### 2. Start Command
+**CRITICAL**: Render defaults to `gunicorn app:app` which fails. You MUST use:
+```bash
+uvicorn backend.app:app --host 0.0.0.0 --port 10000
+```
+*(Update this in Settings > Start Command)*
+
+### 3. Environment Variables
+- `OPENAI_API_KEY`: Your OpenAI API Key.
+- `PYTHON_VERSION`: `3.10.0` (Recommended).
+
+### 4. YouTube Bot Detection Fix (Cookies)
+To avoid "Sign in to confirm you're not a bot" errors:
+1. Install "Get cookies.txt LOCALLY" extension in your browser.
+2. Go to YouTube and export cookies to a file.
+3. In Render Dashboard > **Environment** > **Secret Files**.
+4. Add a file named `cookies.txt` and paste the content.

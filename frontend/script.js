@@ -79,7 +79,8 @@ async function processVideo() {
 
     } catch (error) {
         console.error("Processing failed:", error);
-        alert(`Error: ${error.message}\nMake sure backend is running on port 8000!`);
+        console.error("Processing failed:", error);
+        alert(`Error: ${error.message}\n\nNote: If using the free server, it might be waking up. Please try again in 1 minute!`);
     } finally {
         setLoading(false);
     }
