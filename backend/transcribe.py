@@ -1,55 +1,61 @@
 import os
-AUDIO_DIR = "audio"
+from openai import OpenAI
+
+# Global client
+client = OpenAI()
+
 OUTPUT_DIR = "transcripts"
 
-# Global variable for lazy loading
-model = None
-
-def get_whisper_model():
-    global model
-    if model is None:
-        print("Loading Whisper model... (Lazy)")
-        from faster_whisper import WhisperModel
-        model = WhisperModel(
-            model_size_or_path="base",
-            device="cpu",
-            compute_type="int8"
-        )
-    return model
-
-def transcribe_audio(audio_path=None):
+def transcribe_audio(audio_path):
+    """
+    Transcribes audio using OpenAI's Whisper API.
+    Returns structured data with timestamps.
+    """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    if audio_path:
-        # Process single file
-        print(f"Transcribing: {audio_path}")
-        model_instance = get_whisper_model()
-        segments, _ = model_instance.transcribe(audio_path)
+    
+    print(f"Transcribing via OpenAI API: {audio_path}")
+    
+    try:
+        with open(audio_path, "rb") as audio_file:
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1", 
+                file=audio_file, 
+                response_format="verbose_json"
+            )
         
+        # Parse segments for UI
+        # OpenAI verbose_json return object has .segments list
         transcript_data = []
-        full_text = []
+        full_text = transcript.text
+        
+        # Check if segments exist (sometimes short audio might not return segments in same way, but usually does for verbose_json)
+        segments = getattr(transcript, "segments", [])
         
         for segment in segments:
             # Format: [00:12] Text...
-            start_time = int(segment.start)
+            start_time = int(segment.get("start", 0))
             minutes = start_time // 60
             seconds = start_time % 60
             time_str = f"[{minutes:02d}:{seconds:02d}]"
             
-            text = segment.text.strip()
+            text = segment.get("text", "").strip()
             
             transcript_data.append({
                 "time": time_str,
                 "text": text
             })
-            full_text.append(text)
+
+        print(f"Transcription complete. Length: {len(full_text)} chars")
         
-        # Return both full text (for summary) and segments (for UI)
         return {
-            "full_text": " ".join(full_text),
+            "full_text": full_text,
             "segments": transcript_data
         }
 
+    except Exception as e:
+        print(f"OpenAI Transcription failed: {e}")
+        raise e
 
 if __name__ == "__main__":
-    transcribe_audio()
+    # Test block
+    pass
