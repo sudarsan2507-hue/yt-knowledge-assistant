@@ -7,16 +7,11 @@ DB_PATH = os.path.join(ROOT_DIR, "embeddings", "video_embeddings.sqlite")
 MODEL_NAME = "all-MiniLM-L6-v2"
 TOP_K = 3
 
-# Global variable for lazy loading
-model = None
+from openai import OpenAI
+openai_client = OpenAI()
 
-def get_search_model():
-    global model
-    if model is None:
-        print("Loading Search model... (Lazy)")
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer(MODEL_NAME)
-    return model
+# Global variable for lazy loading
+# model = None
 
 
 def cosine_similarity(a, b):
@@ -24,8 +19,10 @@ def cosine_similarity(a, b):
 
 
 def search(query):
-    model_instance = get_search_model()
-    query_vec = model_instance.encode(query)
+    # model_instance = get_search_model()
+    # query_vec = model_instance.encode(query)
+    response = openai_client.embeddings.create(input=query, model="text-embedding-3-small")
+    query_vec = np.array(response.data[0].embedding, dtype=np.float32)
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()

@@ -8,16 +8,14 @@ DB_PATH = os.path.join(EMBED_DIR, "video_embeddings.sqlite")
 
 MODEL_NAME = "all-MiniLM-L6-v2"
 
-# Global variable for lazy loading
-model = None
+import numpy as np
+from openai import OpenAI
 
-def get_embedding_model():
-    global model
-    if model is None:
-        print("Loading Embedding model... (Lazy)")
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer(MODEL_NAME)
-    return model
+openai_client = OpenAI()
+
+# Global variable for lazy loading
+# model = None
+
 
 
 def init_db():
@@ -57,8 +55,10 @@ def embed_chunks(chunks_data=None, source_name="unknown"):
         # Process in-memory chunks
         for item in chunks_data:
             text = item["text"]
-            model_instance = get_embedding_model()
-            vector = model_instance.encode(text).tobytes()
+            response = openai_client.embeddings.create(input=text, model="text-embedding-3-small")
+            vector = response.data[0].embedding
+            # Convert to binary
+            vector = np.array(vector, dtype=np.float32).tobytes()
 
             cur.execute(
                 "INSERT INTO embeddings (source, chunk_id, text, vector) VALUES (?, ?, ?, ?)",
@@ -82,8 +82,9 @@ def embed_chunks(chunks_data=None, source_name="unknown"):
 
         for item in chunks:
             text = item["text"]
-            model_instance = get_embedding_model()
-            vector = model_instance.encode(text).tobytes()
+            response = openai_client.embeddings.create(input=text, model="text-embedding-3-small")
+            vector = response.data[0].embedding
+            vector = np.array(vector, dtype=np.float32).tobytes()
 
             cur.execute(
                 "INSERT INTO embeddings (source, chunk_id, text, vector) VALUES (?, ?, ?, ?)",
