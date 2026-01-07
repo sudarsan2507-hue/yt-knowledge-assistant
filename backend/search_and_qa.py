@@ -1,33 +1,35 @@
 import sqlite3
 import numpy as np
 import os
+from fastembed import TextEmbedding
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(ROOT_DIR, "embeddings", "video_embeddings.sqlite")
-MODEL_NAME = "all-MiniLM-L6-v2"
 TOP_K = 3
 
-import google.generativeai as genai
-
-if "GEMINI_API_KEY" in os.environ:
-    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-
 # Global variable for lazy loading
-# model = None
+embedding_model = None
+
+def get_model():
+    global embedding_model
+    if embedding_model is None:
+        print("Loading FastEmbed model for search...")
+        embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+    return embedding_model
 
 
 def cosine_similarity(a, b):
+    # Ensure standard numpy float 32
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
 def search(query):
-    # model_instance = get_search_model()
-    # query_vec = model_instance.encode(query)
-    response = genai.embed_content(
-        model="models/text-embedding-004",
-        content=query
-    )
-    query_vec = np.array(response['embedding'], dtype=np.float32)
+    model = get_model()
+    
+    # FastEmbed returns a generator of length 1 for single query
+    print(f"Embedding query: {query}")
+    query_generator = model.embed([query])
+    query_vec = list(query_generator)[0].astype(np.float32)
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
