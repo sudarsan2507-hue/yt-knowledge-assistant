@@ -32,8 +32,23 @@ def search(query):
     query_generator = model.embed([query])
     query_vec = list(query_generator)[0].astype(np.float32)
 
+    # Ensure DB directory exists
+    if not os.path.exists(os.path.dirname(DB_PATH)):
+        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
+
+    # Safety: Ensure table exists (if new DB created by connect)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS embeddings (
+            id INTEGER PRIMARY KEY,
+            source TEXT,
+            chunk_id INTEGER,
+            text TEXT,
+            vector BLOB
+        )
+    """)
 
     cur.execute("SELECT text, vector FROM embeddings")
     rows = cur.fetchall()
