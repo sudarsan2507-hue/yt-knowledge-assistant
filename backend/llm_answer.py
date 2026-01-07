@@ -28,7 +28,7 @@ def generate_answer(question, context_chunks):
 
     try:
         response = client.chat.completions.create(
-            model="llama3-70b-8192", # Strong reasoning model
+            model="llama-3.3-70b-versatile", # Strong reasoning model
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1
         )

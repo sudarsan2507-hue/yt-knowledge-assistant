@@ -23,7 +23,7 @@ def transcribe_audio(audio_path):
             # Groq implementation usually matches OpenAI's
             transcript = client.audio.transcriptions.create(
                 file=(os.path.basename(audio_path), file.read()),
-                model="distil-whisper-large-v3-en",
+                model="whisper-large-v3",
                 response_format="verbose_json",
             )
         

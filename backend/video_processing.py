@@ -38,7 +38,7 @@ def generate_structured_summary(text):
 
     try:
         response = client.chat.completions.create(
-            model="llama3-70b-8192", # Powerful model for summarization
+            model="llama-3.3-70b-versatile", # Powerful model for summarization
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that summarizes video content into structured JSON. You output ONLY JSON."},
                 {"role": "user", "content": prompt}
