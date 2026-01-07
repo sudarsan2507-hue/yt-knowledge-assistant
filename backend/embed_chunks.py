@@ -18,7 +18,8 @@ def get_model():
     if embedding_model is None:
         # "BAAI/bge-small-en-v1.5" is default and efficiently small
         print("Loading FastEmbed model...")
-        embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        cache_dir = os.path.join(ROOT_DIR, "fastembed_cache")
+        embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5", cache_dir=cache_dir)
     return embedding_model
 
 def init_db():

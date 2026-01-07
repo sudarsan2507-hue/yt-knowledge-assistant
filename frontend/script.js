@@ -113,11 +113,17 @@ async function sendChat() {
             body: JSON.stringify({ question: txt })
         });
 
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Server ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
         addMessage(data.answer, 'ai');
 
     } catch (e) {
-        addMessage("Connection Error! (Is backend alive?)", 'ai');
+        console.error("Chat Error:", e);
+        addMessage(`Error: ${e.message}`, 'ai');
     } finally {
         btn.disabled = false;
     }

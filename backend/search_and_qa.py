@@ -14,7 +14,8 @@ def get_model():
     global embedding_model
     if embedding_model is None:
         print("Loading FastEmbed model for search...")
-        embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        cache_dir = os.path.join(ROOT_DIR, "fastembed_cache")
+        embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5", cache_dir=cache_dir)
     return embedding_model
 
 
