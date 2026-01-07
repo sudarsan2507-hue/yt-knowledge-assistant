@@ -35,7 +35,7 @@ def transcribe_audio(audio_path):
 
         # 2. Prompt for Transcript with Timestamps
         print("   Generating transcript...")
-        model = genai.GenerativeModel("gemini-1.5-flash-001")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         
         prompt = """
         Analyze this audio and provide a verbatim transcript.
