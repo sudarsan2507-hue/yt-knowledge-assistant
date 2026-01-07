@@ -1,12 +1,13 @@
 import os
 import json
-from openai import OpenAI
+import google.generativeai as genai
 from backend.audio_extract import extract_audio
 from backend.transcribe import transcribe_audio
 from backend.chunks_text import chunk_text
 from backend.embed_chunks import embed_chunks, reset_db
 
-openai_client = OpenAI()
+if "GEMINI_API_KEY" in os.environ:
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 def generate_structured_summary(text):
     """
@@ -35,16 +36,12 @@ def generate_structured_summary(text):
     """
 
     try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that summarizes video content into structured JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.3
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"}
         )
-        return json.loads(response.choices[0].message.content)
+        return json.loads(response.text)
     except Exception as e:
         print(f"Summarization error: {e}")
         return {"title": "Error", "summary": "Could not generate summary.", "topics": []}
@@ -81,7 +78,7 @@ def process_youtube_video(url):
         return {"error": str(e)}
 
     # 3. Summarize (Topic/Subtopic)
-    print("3. Generating structured summary (Calling OpenAI)...")
+    print("3. Generating structured summary (Calling Gemini)...")
     structure = generate_structured_summary(transcript_text)
     print("   Summary generated.")
 

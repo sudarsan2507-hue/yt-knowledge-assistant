@@ -1,6 +1,8 @@
-from openai import OpenAI
+import google.generativeai as genai
+import os
 
-client = OpenAI()
+if "GEMINI_API_KEY" in os.environ:
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 
 def generate_answer(question, context_chunks):
@@ -23,10 +25,6 @@ Question:
 {question}
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
-    )
-
-    return response.choices[0].message.content
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(prompt)
+    return response.text

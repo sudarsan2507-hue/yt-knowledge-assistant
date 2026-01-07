@@ -7,8 +7,10 @@ DB_PATH = os.path.join(ROOT_DIR, "embeddings", "video_embeddings.sqlite")
 MODEL_NAME = "all-MiniLM-L6-v2"
 TOP_K = 3
 
-from openai import OpenAI
-openai_client = OpenAI()
+import google.generativeai as genai
+
+if "GEMINI_API_KEY" in os.environ:
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 # Global variable for lazy loading
 # model = None
@@ -21,8 +23,11 @@ def cosine_similarity(a, b):
 def search(query):
     # model_instance = get_search_model()
     # query_vec = model_instance.encode(query)
-    response = openai_client.embeddings.create(input=query, model="text-embedding-3-small")
-    query_vec = np.array(response.data[0].embedding, dtype=np.float32)
+    response = genai.embed_content(
+        model="models/text-embedding-004",
+        content=query
+    )
+    query_vec = np.array(response['embedding'], dtype=np.float32)
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()

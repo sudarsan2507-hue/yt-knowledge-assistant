@@ -9,9 +9,10 @@ DB_PATH = os.path.join(EMBED_DIR, "video_embeddings.sqlite")
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 import numpy as np
-from openai import OpenAI
+import google.generativeai as genai
 
-openai_client = OpenAI()
+if "GEMINI_API_KEY" in os.environ:
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 # Global variable for lazy loading
 # model = None
@@ -55,8 +56,11 @@ def embed_chunks(chunks_data=None, source_name="unknown"):
         # Process in-memory chunks
         for item in chunks_data:
             text = item["text"]
-            response = openai_client.embeddings.create(input=text, model="text-embedding-3-small")
-            vector = response.data[0].embedding
+            response = genai.embed_content(
+                model="models/text-embedding-004",
+                content=text
+            )
+            vector = response['embedding']
             # Convert to binary
             vector = np.array(vector, dtype=np.float32).tobytes()
 
@@ -82,8 +86,11 @@ def embed_chunks(chunks_data=None, source_name="unknown"):
 
         for item in chunks:
             text = item["text"]
-            response = openai_client.embeddings.create(input=text, model="text-embedding-3-small")
-            vector = response.data[0].embedding
+            response = genai.embed_content(
+                model="models/text-embedding-004",
+                content=text
+            )
+            vector = response['embedding']
             vector = np.array(vector, dtype=np.float32).tobytes()
 
             cur.execute(
