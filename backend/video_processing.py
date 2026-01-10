@@ -10,13 +10,19 @@ client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
 )
 
-def generate_structured_summary(text):
+def generate_structured_summary(text, language_mode="original"):
     """
     Generates a Topic/Subtopic structure from the transcript using Groq Llama 3.
     """
+    
+    lang_instruction = ""
+    if language_mode == "english":
+        lang_instruction = "IMPORTANT: The output MUST be in English, even if the transcript is in another language."
+
     prompt = f"""
     Analyze the following video transcript and structure it into a clear, nested hierarchy of Topics and Subtopics.
     For each subtopic, provide a brief 1-sentence summary.
+    {lang_instruction}
     
     Output JSON format:
     {{
@@ -52,8 +58,8 @@ def generate_structured_summary(text):
         return {"title": "Error", "summary": "Could not generate summary.", "topics": []}
 
 
-def process_youtube_video(url):
-    print(f"--- Starting processing for {url} ---")
+def process_youtube_video(url, language_mode="original"):
+    print(f"--- Starting processing for {url} [Mode: {language_mode}] ---")
 
     # 1. Extract Audio
     print("1. Downloading audio...")
@@ -71,7 +77,11 @@ def process_youtube_video(url):
     try:
         # Get absolute path for transcribe
         abs_audio_path = os.path.abspath(audio_path)
-        transcript_data = transcribe_audio(abs_audio_path)
+        
+        # Determine if we need to translate to English
+        attempt_translation = (language_mode == "english")
+        
+        transcript_data = transcribe_audio(abs_audio_path, attempt_translation=attempt_translation)
         
         # Unpack
         transcript_text = transcript_data["full_text"]
@@ -84,7 +94,7 @@ def process_youtube_video(url):
 
     # 3. Summarize (Topic/Subtopic)
     print("3. Generating structured summary (Calling Groq Llama 3)...")
-    structure = generate_structured_summary(transcript_text)
+    structure = generate_structured_summary(transcript_text, language_mode=language_mode)
     print("   Summary generated.")
 
     # 4. Chunk & Embed for Q&A

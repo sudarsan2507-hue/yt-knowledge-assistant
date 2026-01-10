@@ -9,24 +9,35 @@ client = Groq(
 
 OUTPUT_DIR = "transcripts"
 
-def transcribe_audio(audio_path):
+def transcribe_audio(audio_path, attempt_translation=False):
     """
     Transcribes audio using Groq (Distil-Whisper).
     Returns structured data with timestamps.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    print(f"Transcribing via Groq API: {audio_path}")
+    action = "Translating" if attempt_translation else "Transcribing"
+    print(f"{action} via Groq API: {audio_path}")
     
     try:
         with open(audio_path, "rb") as file:
             # Groq implementation usually matches OpenAI's
             # Pass the file object directly instead of reading it into memory
-            transcript = client.audio.transcriptions.create(
-                file=(os.path.basename(audio_path), file),
-                model="whisper-large-v3",
-                response_format="verbose_json",
-            )
+            
+            if attempt_translation:
+                 # Use translations endpoint (Audio -> English Text)
+                transcript = client.audio.translations.create(
+                    file=(os.path.basename(audio_path), file),
+                    model="whisper-large-v3",
+                    response_format="verbose_json",
+                )
+            else:
+                # Standard transcription (Audio -> Same Language Text)
+                transcript = client.audio.transcriptions.create(
+                    file=(os.path.basename(audio_path), file),
+                    model="whisper-large-v3",
+                    response_format="verbose_json",
+                )
         
         # Parse segments for UI
         # Groq verbose_json return object has .segments list

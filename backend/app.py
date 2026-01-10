@@ -57,13 +57,14 @@ class AskRequest(BaseModel):
 
 class ProcessRequest(BaseModel):
     url: str
+    language_mode: str = "original"
 
 
 @app.post("/process_video")
 def process_video_endpoint(data: ProcessRequest):
-    logger.info(f"Processing URL: {data.url}")
+    logger.info(f"Processing URL: {data.url} | Mode: {data.language_mode}")
     try:
-        result = process_youtube_video(data.url)
+        result = process_youtube_video(data.url, language_mode=data.language_mode)
         if "error" in result:
              logger.error(f"Processing failed logic: {result['error']}")
         return result

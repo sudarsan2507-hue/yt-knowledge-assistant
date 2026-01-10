@@ -46,6 +46,8 @@ async function checkBackendHealth() {
 async function processVideo() {
     const urlInput = document.getElementById('videoUrl');
     const url = urlInput.value.trim();
+    const languageSelect = document.getElementById('languageSelect');
+    const languageMode = languageSelect ? languageSelect.value : 'original';
 
     if (!isBackendOnline) {
         alert("BACKEND OFFLINE! \nCannot process video. Please start the backend server.");
@@ -65,7 +67,10 @@ async function processVideo() {
         const response = await fetch(`${API_BASE}/process_video`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: url })
+            body: JSON.stringify({
+                url: url,
+                language_mode: languageMode
+            })
         });
 
         if (!response.ok) {
