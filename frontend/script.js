@@ -207,7 +207,7 @@ function addMessage(text, sender) {
 
     // Allow basic bold formatting
     div.innerHTML = sender === 'ai'
-        ? `<strong>AI Chan:</strong> ${text.replace(/\n/g, '<br>')}`
+        ? `<strong>AI Buddy:</strong> ${text.replace(/\n/g, '<br>')}`
         : text;
 
     box.appendChild(div);
