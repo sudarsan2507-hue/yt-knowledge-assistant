@@ -21,8 +21,9 @@ def transcribe_audio(audio_path):
     try:
         with open(audio_path, "rb") as file:
             # Groq implementation usually matches OpenAI's
+            # Pass the file object directly instead of reading it into memory
             transcript = client.audio.transcriptions.create(
-                file=(os.path.basename(audio_path), file.read()),
+                file=(os.path.basename(audio_path), file),
                 model="whisper-large-v3",
                 response_format="verbose_json",
             )

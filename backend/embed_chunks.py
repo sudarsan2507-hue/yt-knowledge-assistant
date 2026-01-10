@@ -2,25 +2,13 @@ import os
 import json
 import sqlite3
 import numpy as np
-from fastembed import TextEmbedding
+from backend.shared_model import get_model
 
 CHUNKS_DIR = "chunks"
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EMBED_DIR = os.path.join(ROOT_DIR, "embeddings")
 DB_PATH = os.path.join(EMBED_DIR, "video_embeddings.sqlite")
 
-# Global variable for lazy loading
-# fastembed model is ~200MB, loads once
-embedding_model = None
-
-def get_model():
-    global embedding_model
-    if embedding_model is None:
-        # "BAAI/bge-small-en-v1.5" is default and efficiently small
-        print("Loading FastEmbed model...")
-        cache_dir = os.path.join(ROOT_DIR, "fastembed_cache")
-        embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5", cache_dir=cache_dir)
-    return embedding_model
 
 def init_db():
     os.makedirs(EMBED_DIR, exist_ok=True)

@@ -1,22 +1,11 @@
 import sqlite3
 import numpy as np
 import os
-from fastembed import TextEmbedding
+from backend.shared_model import get_model
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(ROOT_DIR, "embeddings", "video_embeddings.sqlite")
 TOP_K = 3
-
-# Global variable for lazy loading
-embedding_model = None
-
-def get_model():
-    global embedding_model
-    if embedding_model is None:
-        print("Loading FastEmbed model for search...")
-        cache_dir = os.path.join(ROOT_DIR, "fastembed_cache")
-        embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5", cache_dir=cache_dir)
-    return embedding_model
 
 
 def cosine_similarity(a, b):
