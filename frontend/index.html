@@ -12,22 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
-        .language-dropdown {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--anime-cyan);
-            color: white;
-            padding: 0.5rem;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            width: 100%;
-            font-family: 'Exo 2', sans-serif;
-            cursor: pointer;
-        }
-
-        .language-dropdown option {
-            background: #2a2a2a;
-            color: white;
-        }
+        /* Inline styles moved to style.css */
     </style>
 </head>
 
@@ -51,15 +36,21 @@
             <h2 style="margin-top: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--anime-yellow);">
                 <i data-lucide="play-circle"></i> START ANALYSIS
             </h2>
-            <div class="input-group">
-                <select id="languageSelect" class="language-dropdown">
-                    <option value="original">Original Language</option>
-                    <option value="english">Translate to English</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <input type="text" id="videoUrl" placeholder="Paste YouTube Link here...">
-                <button class="action-btn" onclick="processVideo()" id="processBtn">GO!</button>
+            <div class="input-container">
+                <div class="input-row">
+                    <div class="language-group">
+                        <div class="custom-select-wrapper">
+                            <select id="languageSelect" class="language-dropdown">
+                                <option value="original">Original Language</option>
+                                <option value="english">Translate to English</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="url-group">
+                        <input type="text" id="videoUrl" placeholder="Paste YouTube Link here...">
+                        <button class="action-btn" onclick="processVideo()" id="processBtn">GO!</button>
+                    </div>
+                </div>
             </div>
 
             <div id="loadingState" class="loading-overlay">
