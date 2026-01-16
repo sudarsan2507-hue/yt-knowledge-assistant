@@ -21,7 +21,7 @@ def extract_audio(youtube_url: str):
         cookie_file = "/etc/secrets/cookies.txt"
 
     ydl_opts = {
-        # Best available audio (Simplified)
+        # Best available audio (Simplified with fallback)
         "format": "bestaudio/best",
         
         # Output file template
