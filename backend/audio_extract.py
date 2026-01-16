@@ -21,9 +21,9 @@ def extract_audio(youtube_url: str):
         cookie_file = "/etc/secrets/cookies.txt"
 
     ydl_opts = {
-        # Best available audio (fallback chain)
-        "format": "bestaudio[ext=m4a]/bestaudio/best[ext=mp4]/best",
-
+        # Best available audio (Simplified)
+        "format": "bestaudio/best",
+        
         # Output file template
         "outtmpl": outtmpl,
 
@@ -36,10 +36,11 @@ def extract_audio(youtube_url: str):
             }
         ],
 
-        # Reduce noise
+        # Options
         "quiet": True,
         "no_warnings": True,
         "nocheckcertificate": True,
+        "noplaylist": True, # Ensure we don't get a playlist
     }
 
     if os.path.exists(cookie_file):
@@ -47,9 +48,13 @@ def extract_audio(youtube_url: str):
 
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(youtube_url, download=True)
-        # Construct the expected filename (yt-dlp replaces extension)
         filename = ydl.prepare_filename(info)
         final_filename = os.path.splitext(filename)[0] + ".mp3"
+        
+        # Verify file exists and is not empty
+        if not os.path.exists(final_filename) or os.path.getsize(final_filename) == 0:
+            raise Exception("The downloaded file is empty or missing.")
+            
         return final_filename
 
 

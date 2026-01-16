@@ -69,8 +69,20 @@ def process_youtube_video(url, language_mode="original"):
     except Exception as e:
         import traceback
         traceback.print_exc()
-        print(f"   Audio download failed: {e}")
-        return {"error": f"Audio download failed: {e}"}
+        error_msg = str(e)
+        
+        # Sanitize error message for UI
+        if "Sign in" in error_msg:
+            ui_msg = "This video is age-restricted or requires sign-in."
+        elif "Video unavailable" in error_msg:
+            ui_msg = "This video is unavailable (private or deleted)."
+        elif "empty" in error_msg.lower():
+             ui_msg = "Download failed (Empty file). Try a different video."
+        else:
+            ui_msg = f"Audio download failed. (Technicals: {error_msg[:50]}...)"
+
+        print(f"   Audio download failed: {error_msg}")
+        return {"error": ui_msg}
 
     # 2. Transcribe
     print("2. Transcribing...")
