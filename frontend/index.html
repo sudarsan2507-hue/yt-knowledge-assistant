@@ -57,6 +57,20 @@
                 <div class="loading-text">WORKING ON IT... (~´･_･`)~</div>
                 <p style="color: var(--anime-text); font-size: 0.9rem;">(This might take a moment, please wait!)</p>
             </div>
+
+            <!-- Error Container -->
+            <div id="errorContainer" class="error-message" style="display: none;">
+                <div class="error-icon">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <div class="error-content">
+                    <h3 style="margin: 0; color: #ff0050;">OOPS! ERROR DECTECTED</h3>
+                    <p id="errorText" style="margin: 0.5rem 0 0; color: white;">Something went wrong...</p>
+                </div>
+                <button onclick="document.getElementById('errorContainer').style.display='none'" class="close-error">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
         </div>
 
         <!-- RESULT SECTION -->

@@ -50,7 +50,13 @@ async function processVideo() {
     const languageMode = languageSelect ? languageSelect.value : 'original';
 
     if (!isBackendOnline) {
-        alert("BACKEND OFFLINE! \nCannot process video. Please start the backend server.");
+        // Show styled error message for offline
+        const errContainer = document.getElementById('errorContainer');
+        const errText = document.getElementById('errorText');
+
+        errText.innerText = "BACKEND OFFLINE! Cannot process video. Please start the backend server.";
+        errContainer.style.display = 'flex';
+        if (window.lucide) lucide.createIcons();
         return;
     }
 
@@ -84,8 +90,19 @@ async function processVideo() {
 
     } catch (error) {
         console.error("Processing failed:", error);
-        console.error("Processing failed:", error);
-        alert(`Error: ${error.message}\n\nNote: If using the free server, it might be waking up. Please try again in 1 minute!`);
+
+        // Show styled error message
+        const errContainer = document.getElementById('errorContainer');
+        const errText = document.getElementById('errorText');
+
+        errText.innerText = error.message;
+        errContainer.style.display = 'flex';
+
+        // Hide results if they were open
+        document.getElementById('resultsArea').style.display = 'none';
+
+        if (window.lucide) lucide.createIcons();
+
     } finally {
         setLoading(false);
     }
