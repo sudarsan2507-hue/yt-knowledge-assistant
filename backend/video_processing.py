@@ -76,6 +76,8 @@ def process_youtube_video(url, language_mode="original"):
             ui_msg = "This video is age-restricted or requires sign-in."
         elif "Video unavailable" in error_msg:
             ui_msg = "This video is unavailable (private or deleted)."
+        elif "Requested format" in error_msg or "ffmpeg" in error_msg.lower():
+             ui_msg = "Server Configuration Error: Audio processor (FFmpeg) not found. Please check deployment logs."
         elif "empty" in error_msg.lower():
              ui_msg = "Download failed (Empty file). Try a different video."
         else:

@@ -2,12 +2,10 @@ services:
   - type: web
     name: yt-knowledge-assistant
     runtime: python
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn backend.app:app --host 0.0.0.0 --port 10000
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
       - key: GROQ_API_KEY
         sync: false
-      - key: PATH
-        value: /opt/render/project/src/ffmpeg:$PATH
