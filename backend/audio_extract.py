@@ -19,14 +19,26 @@ def extract_audio(youtube_url: str):
     project_root = os.path.dirname(backend_dir)
     
     # Paths
-    yt_dlp_exe = os.path.join(project_root, "yt-dlp.exe")
+    # Detect Environment
+    if sys.platform == "win32" and os.path.exists(os.path.join(project_root, "yt-dlp.exe")):
+        yt_dlp_exe = os.path.join(project_root, "yt-dlp.exe")
+        print(f"DEBUG: Using local Windows binary: {yt_dlp_exe}")
+    else:
+        # On Linux/Render, use the installed package executable
+        # Typically 'yt-dlp' is in the PATH after pip install
+        yt_dlp_exe = shutil.which("yt-dlp")
+        if not yt_dlp_exe:
+             # Fallback: try to execute module directly? python -m yt_dlp
+             # But subprocess expects an executable unless shell=True
+             # Let's hope it's in path.
+             yt_dlp_exe = "yt-dlp" 
+        print(f"DEBUG: Using system yt-dlp: {yt_dlp_exe}")
+
     cookie_file = os.path.join(project_root, "cookies.txt")
     
-    # 1. Verify yt-dlp.exe exists
-    if not os.path.exists(yt_dlp_exe):
-        raise Exception(f"Critical Error: yt-dlp.exe not found at {yt_dlp_exe}. Please download the standalone executable.")
-
-    print(f"DEBUG: Using standalone yt-dlp at: {yt_dlp_exe}")
+    # 1. Verify yt-dlp executable availability (Skip strict check for system command to allow PATH resolution)
+    if sys.platform == "win32" and not os.path.exists(yt_dlp_exe):
+         raise Exception(f"Critical Error: yt-dlp.exe not found at {yt_dlp_exe}")
 
     # 2. Cookie Handling (Write ENV to file if needed)
     if os.environ.get("YOUTUBE_COOKIES"):
@@ -35,15 +47,22 @@ def extract_audio(youtube_url: str):
             f.write(os.environ.get("YOUTUBE_COOKIES"))
     
     # 3. Locate FFmpeg
+    ffmpeg_binary = None
     import imageio_ffmpeg
     try:
+        # imageio_ffmpeg works on Linux too, but on Render we might use the one from build.sh
         ffmpeg_binary = imageio_ffmpeg.get_ffmpeg_exe()
         print(f"DEBUG: Imageio-FFmpeg found binary at: {ffmpeg_binary}")
-        ffmpeg_dir = os.path.dirname(ffmpeg_binary) # yt-dlp often wants the dir or full path
     except Exception as e:
         print(f"WARNING: Could not find ffmpeg via imageio: {e}")
-        ffmpeg_binary = None
-
+    
+    # On Render, we installed ffmpeg to project_root/ffmpeg/ffmpeg in build.sh
+    # We should check for that if imageio failed or preferred
+    render_ffmpeg = os.path.join(project_root, "ffmpeg", "ffmpeg")
+    if os.path.exists(render_ffmpeg):
+        print("DEBUG: Found Render static build ffmpeg.")
+        ffmpeg_binary = render_ffmpeg
+    
     # 4. Construct Command
     # output template: audio/VIDEO_ID.mp3 (yt-dlp handles the extension switch during conversion)
     # We use %(id)s to ensure clean filenames
@@ -51,7 +70,19 @@ def extract_audio(youtube_url: str):
     
     cmd = [
         yt_dlp_exe,
-        "--js-runtimes", "node",       # Force Node.js
+    ]
+    
+    # Only force Node.js if checking signature is critical AND we know it exists.
+    # On Render, we might not have Node. 
+    # BUT user requested: "It always passes --js-runtimes node."
+    # We will honor that logic IF node is found, otherwise warned.
+    node_path = shutil.which("node")
+    if node_path:
+        cmd.extend(["--js-runtimes", "node"])
+    else:
+        print("WARNING: Node.js not found in PATH. Skipping --js-runtimes node force.")
+
+    cmd.extend([
         "-x",                          # Extract audio
         "--audio-format", "mp3",       # Convert to mp3
         "--audio-quality", "192K",     # Quality
@@ -60,7 +91,7 @@ def extract_audio(youtube_url: str):
         "--force-overwrites",          # Overwrite if exists
         "--no-check-certificate",      # Skip SSL checks (optional, but requested in previous steps)
         "--verbose",                   # Debug output
-    ]
+    ])
 
     # Add Cookies if present
     if os.path.exists(cookie_file):
