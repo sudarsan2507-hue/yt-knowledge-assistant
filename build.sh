@@ -22,4 +22,17 @@ export PATH=$PWD/ffmpeg:$PATH
 echo "FFmpeg installed to $PWD/ffmpeg"
 ./ffmpeg/ffmpeg -version
 
+echo "--- Installing Node.js ---"
+# Install Node.js (using static binary for simplicity and speed)
+NODE_VERSION="v20.11.0"
+NODE_DIST="node-$NODE_VERSION-linux-x64"
+
+wget https://nodejs.org/dist/$NODE_VERSION/$NODE_DIST.tar.xz
+tar -xJf $NODE_DIST.tar.xz
+rm $NODE_DIST.tar.xz
+
+# Add to PATH
+export PATH=$PWD/$NODE_DIST/bin:$PATH
+echo "Node.js installed version: $(node -v)"
+
 echo "--- Build Complete ---"
