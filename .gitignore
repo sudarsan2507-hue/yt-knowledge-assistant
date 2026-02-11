@@ -10,4 +10,5 @@ env/
 venv/
 .vscode/
 *.sqlite
-
+yt-dlp.exe
+cookies.txt
